@@ -1,0 +1,17 @@
+{% extends 'real_estate/base.html' %}
+{% block content %}
+    <div style="margin-left: 5%;margin-right: 5%;">
+        <h1 style="text-align: center">{{ request.user.username }}</h1>
+        <h2>Liked estates: </h2>
+        <ul>
+            {% for estate in favourite %}
+                <li>
+                    <a href="/show/{{ estate.estate.id }}/">
+                        <img src="/media/{{ estate.estate.main_photo }}" alt="photo" height="150px">
+                        <p>{{ estate.estate.name }}</p>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

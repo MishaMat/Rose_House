@@ -1,0 +1,149 @@
+{% extends 'real_estate/base.html' %}
+
+{% block extend-head %}
+    <style>
+        #main-estate-list {
+            background-color: #e7b06a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #main-estate-elem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5% 10% 5% 10%;
+            font-size: 200%;
+            border-top: 1px solid black;
+        }
+
+        #main-estate-elem img {
+            width: 100%;
+            height: auto;
+        }
+
+        #estate-title {
+            font-size: 150%;
+        }
+
+        #price {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 100%;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #ff8700;
+            border: 2px solid #7c4300;
+            border-radius: 15px;
+        }
+
+        #search-field {
+            background-image: url("/media/static/lviv.jpeg");
+            background-repeat: round;
+            height: 14em;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-direction: column;
+        }
+
+        #search-field input {
+            border: 2px solid #ff8700;
+            border-radius: 5px;
+            height: 65px;
+            width: 450px;
+            font-size: 180%;
+        }
+
+        #ad-search-button {
+            font-size: 20px;
+            padding: 5px 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        #adv-search-form {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            margin-right: 10%;
+            margin-left: 10%;
+        }
+
+        #adv-search-form button {
+            font-size: 20px;
+            padding: 5px 10px;
+            margin: 20px 10%;
+        }
+
+        #search-collapseOne {
+            background-color: #ececec;
+        }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            font-size: 300%;
+            padding: 1%;
+            background-color: #e7b06a;
+        }
+
+
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//geodata.solutions/includes/countrystatecity.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="search-field">
+        <form method="post" id="search-form">
+            {% csrf_token %}
+            <label>
+                <input type="text" name="search" placeholder="Search estate...">
+            </label>
+            <button class="button" type="submit">Search</button>
+        </form>
+        <a class="button" id="ad-search-button" data-bs-toggle="collapse"
+           data-bs-target="#search-collapseOne" aria-expanded="false" aria-controls="search-collapseOne">advanced
+            search
+            &darr;</a>
+    </div>
+
+    <div id="search-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+         data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            <form method="post">
+                {% csrf_token %}
+                <div id="adv-search-form">
+                    {{ adv_search }}
+                    <button type="submit" class="button">- Search -</button>
+                </div>
+            </form>
+        </div>
+        <p style="text-align: center">⤋</p>
+    </div>
+    <div id="main-estate-list">
+        {% for i in page.object_list %}
+            <a id="main-estate-elem" href="/show/{{ i.id }}/" style="text-decoration: none;color: black">
+                <img src="/media/{{ i.main_photo }}" alt='' height="150px">
+                <p id="estate-title">{{ i.name }}</p>
+                <p>{{ i.squares }}m^2 - {{ i.rooms }} rooms - {{ i.build_at }}</p>
+                <p id="price">{{ i.buy_price }} $</p>
+            </a>
+        {% endfor %}
+    </div>
+    <div id="pagination">
+        {% if page.has_previous %}
+            <a class="button" href="{% url 'main-page' %}?page={{ page.previous_page_number }}"><- Prev page</a>
+        {% endif %}
+        {{ page.number }}
+        {% if page.has_next %}
+            <a class="button" href="{% url 'main-page' %}?page={{ page.next_page_number }}">Next page -></a>
+        {% endif %}
+    </div>
+{% endblock %}

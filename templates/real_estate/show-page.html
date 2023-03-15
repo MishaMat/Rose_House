@@ -1,0 +1,105 @@
+{% extends 'real_estate/base.html' %}
+{% block extend-head %}
+    <style>
+        body{
+            background-color: beige;
+        }
+        #photos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #photos img {
+            margin: 3px;
+            width: 60%;
+        }
+
+        #main-info {
+            font-size: 200%;
+            margin-left: 5%;
+            margin-right: 5%;
+        }
+
+        #map {
+            display: flex;
+            justify-content: center;
+        }
+
+        #map iframe {
+            width: 90%;
+            height: 400px;
+        }
+
+        #dev {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #comments{
+            font-size: 160%;
+            margin-left: 5%;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    {#    TODO ADD Favourite Button via JS#}
+    <div id="photos">
+        <img src="/media/{{ obj.main_photo }}" alt=''>
+        {% for ph in photos %}
+            <img src="/media/{{ ph.photo }}" alt=''>
+        {% endfor %}
+    </div>
+    <div id="main-info">
+        <div id="estate-name">
+            <h1 style="font-size: 200%;text-align: center">{{ obj.name }}</h1>
+            <b><p style="text-align: center">{{ obj.buy_price }}$</p></b>
+        </div>
+        <p>Address: {{ obj.country }}-{{ obj.state }}-{{ obj.city }}-{{ obj.address }}</p>
+        <p>{{ obj.description }}</p>
+        <p>Build in: {{ obj.build_at }}</p>
+        <div id="map">
+            <iframe id="gmap_canvas" src="{{ address_src }}"></iframe>
+        </div>
+
+        <h2 style="font-size:150%;text-align: center">Developer</h2>
+        <a href="{{ obj.developer.developer_src }}" id="dev">
+            <img src="/media/{{ obj.developer.photo }}" alt='' height="100px">
+            <h3>{{ obj.developer.name }}</h3>
+        </a>
+    </div>
+    <button></button>
+    <div id="comments">
+        <h2 style="font-size: 150%">Comment</h2>
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <label>
+                    <input type="text" name="comment">
+                </label>
+                {% if user.is_authenticated %}
+                    <button type="submit">Send</button>
+                {% else %}
+                    <a href="" data-bs-toggle="modal" data-bs-target="#ModalLogIn">Send</a>
+                {% endif %}
+            </p>
+        </form>
+        <ul>
+            {% for comment in comments %}
+                <li>
+                    <b>{{ comment.user.username }}</b>-{{ comment.date }}
+                    <p>{{ comment.comment }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+    <script>
+    </script>
+
+{% endblock %}

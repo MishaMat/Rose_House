@@ -1,0 +1,35 @@
+{% extends 'real_estate/base.html' %}
+{% block extend-head %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//geodata.solutions/includes/countrystatecity.js"></script>
+    <style>
+        #post-form {
+            font-size: 140%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            margin-right: 10%;
+            margin-left: 10%;
+        }
+        #post-form p input,#post-form p select{
+            width: 100%;
+        }
+        #post-form button {
+            font-size: 20px;
+            padding: 5px 10px;
+            margin: 20px 10%;
+        }
+        #content-field{
+            background-color: #ececec;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data" id="post-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Post</button>
+    </form>
+{% endblock %}

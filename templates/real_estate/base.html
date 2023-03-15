@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rose House</title>
+    <style>
+        #body {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+        }
+
+        /* Style the navbar */
+        #navbar {
+            overflow: hidden;
+            background-color: #616161;
+        }
+
+        /* Navbar links */
+        #navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px;
+            text-decoration: none;
+        }
+
+        /* Page content */
+        .content {
+            padding: 16px;
+        }
+
+        /* The sticky class is added to the navbar with JS when it reaches its scroll position */
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+
+        /* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+        .sticky + .content {
+            padding-top: 60px;
+        }
+
+        .prevent {
+            padding-top: 240px;
+        }
+
+        #title {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+            font-size: 110px;
+            color: white;
+        }
+
+        #title-bar {
+            padding-top: 2%;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        #title-logo {
+            height: 8em;
+        }
+
+        #nav-bar-buttons {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            font-size: 180%;
+        }
+
+        .nav-button:hover {
+            background-color: #3f3f3f;
+        }
+
+        #flush-headingThree button:hover, #flush-headingTwo button:hover, #flush-headingOne button:hover {
+            background-color: #3f3f3f;
+        }
+
+        #flush-headingThree button, #flush-headingTwo button, #flush-headingOne button {
+            color: white;
+            background-color: #777777;
+            font-size: 120%;
+        }
+
+        #flush-headingOne button:not(.collapsed),
+        #flush-headingTwo button:not(.collapsed),
+        #flush-headingThree button:not(.collapsed) {
+            color: #ff8700;
+            background-color: #6b6b6b;
+        }
+
+        #ac-one, #ac-two {
+            font-size: 200%;
+            background-color: #ececec;
+        }
+
+        #inst_img {
+            width: 3.5em;
+        }
+
+        #bottom-info {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            border-top: 1px solid #ff8700;
+            font-size: 120%;
+        }
+
+        #bottom-logo {
+            height: 4em;
+        }
+
+        .active_button {
+            color: #ff8700;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #ff8700;
+            border: 2px solid #7c4300;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+
+        .button:hover {
+            background-color: #e07600
+        }
+
+        .button:active {
+            background-color: #e07600;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    {% block extend-head %}{% endblock %}
+</head>
+<body id="body">
+
+<div id='navbar'>
+    <div id="title-bar">
+        <a href="" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" onclick="scroll_bottom()">
+            <img src="/media/static/minimalistic_logo_3.jpeg" alt="photo" id="title-logo">
+        </a>
+        <a href="" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" onclick="scroll_bottom()">
+            <h1 id="title">Rose House</h1>
+        </a>
+    </div>
+    <div id="nav-bar-buttons">
+        <a class="nav-button" id="main-button" href="{% url 'main-page' %}"
+           {% if active_button == 'main' %}style="color:#ff8700" {% endif %}>Main</a>
+        <a class="nav-button" id="add-estate-button" href="{% url 'post-page' %}"
+           {% if active_button == 'add' %}style="color:#ff8700" {% endif %}>Add estate</a>
+        <a class="nav-button" id="developers-button" href="{% url 'show-dev-page' %}"
+           {% if active_button == 'dev' %}style="color:#ff8700" {% endif %}>Developers</a>
+        <a class="nav-button" id="add-developers-button" href="{% url 'post-dev-page' %}"
+           {% if active_button == 'add-dev' %}style="color:#ff8700" {% endif %}>Add developers</a>
+        {% if not request.user.is_authenticated %}
+            <a class="nav-button" href="#" onclick="remove_sticky()" data-bs-toggle="modal"
+               data-bs-target="#ModalLogIn" id="login-button">Login</a>
+            <a class="nav-button" href="#" onclick="remove_sticky()" data-bs-toggle="modal"
+               data-bs-target="#ModalSignUp" id="register-button">Register</a>
+            <div class="modal" tabindex="-1" id="ModalSignUp">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Register</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                {{ reg_form.as_p }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" tabindex="-1" id="ModalLogIn">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Login</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                {{ log_form.as_p }}
+                            </div>
+                            <div class="modal-footer">
+                                <a href="" style="color: #ff8700" data-bs-toggle="modal" data-bs-target="#ModalSignUp">Register</a>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <a class="nav-button" id="account-button" href="{% url 'account-page' %}"
+               {% if active_button == 'account' %}style="color:#ff8700" {% endif %}>Account</a>
+            <a class="nav-button" id="logout-button" href="{% url 'logout-page' %}">Logout</a>
+        {% endif %}
+    </div>
+</div>
+{% if msg %}
+    <div>
+        <p style="background-color: red">{{ msg }}</p>
+    </div>
+{% endif %}
+<div id="content-field">
+    {% block content %}{% endblock %}
+</div>
+<div id="footer">
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item" id="ac-one">
+            <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                    About us
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                 data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <p>
+                        Hello, <a style="text-decoration: None;color: #ff8700">Rose House</a> started as our family
+                        business,but now it's our life.
+                        Every estate you can see here is designed and implemented by us.
+                        We have lots of ready to sell apartments,just <a href="#" data-bs-toggle="collapse"
+                                                                         data-bs-target="#flush-collapseTwo"
+                                                                         aria-expanded="false"
+                                                                         aria-controls="flush-collapseTwo"
+                                                                         style="color: #ff8700;text-decoration: None">call</a>
+                        us
+                        and we will choose your dream estate.
+                    </p>
+                    <p>
+                        <a style="text-decoration: None;color: #ff8700">Big team </a>is the key to <a
+                            style="text-decoration: None;color: #ff8700">success</a>! Our designers will make your
+                        flat look magnificent,
+                        big team of our builders will implement all tasks perfectly and on time.
+                        Also, our big team of electricians will make your house bright!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item" id="ac-two">
+            <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                    Contacts
+                </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+                 data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <p>Phone numbers:</p>
+                    <ul>
+                        <li>
+                            <a href=“tel:+380676767674” style="text-decoration: None;color: #ff8700">+38 (067) 676 76
+                                74</a>
+                        </li>
+                        <li>
+                            <a href=“tel:+380989090008” style="text-decoration: None;color: #ff8700">+38 (098) 909 00
+                                08</a>
+                        </li>
+                    </ul>
+                    Join us on:
+                    <a href="https://instagram.com/home_repair_lviv?igshid=YmMyMTA2M2Y=">
+                        <img src="/media/static/inst_logo.png" alt="(inst)" id="inst_img">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="bottom-info">
+            <img src="/media/static/logo_2.JPG" id="bottom-logo" alt="(logo)">
+            <div>
+                <p>Site design / logo © created by</p>
+                <p>Mykhaylo Matviykiv. 2023.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // When the user scrolls the page, execute myFunction
+    window.onscroll = function () {
+        myFunction()
+    };
+    // Get the navbar
+    var navbar = document.getElementById("navbar");
+    var content = document.getElementById("content-field");
+    // Get the offset position of the navbar
+    var sticky = navbar.offsetTop;
+
+    // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+    function myFunction() {
+        {#console.log("window")#}
+        {#console.log(window.pageYOffset)#}
+        {#console.log("sticky")#}
+        {#console.log(window.pageYOffset)#}
+
+        if (window.pageYOffset === 0) {
+            navbar.classList.remove("sticky");
+            content.classList.remove("prevent");
+        } else {
+            navbar.classList.add("sticky")
+            content.classList.add("prevent");
+        }
+    }
+
+    ////////////////////////
+    function remove_sticky() {
+        navbar.classList.remove("sticky");
+        content.classList.remove("prevent");
+    }
+
+    ////////////////////////
+    function scroll_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    ////////////////////////
+    function change_nav_button(id) {
+        let obj = document.getElementById(id).style.color = '#ff8700';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'real_estate/main-page.html' %}
+
+{% block content %}
+    <div class="block" style="display: flex;flex-direction: column;align-items: center">
+        {% for i in devs %}
+            <a href="{{ i.developer_src }}" style="text-decoration: none;color: black">
+                <img src="/media/{{ i.photo }}" alt='' height="150px">
+                <h4 style="text-align: center">{{ i.name }}</h4></a>
+            <a href="/filter/{{ i.name }}/"><p>Show Estate</p></a>
+        {% endfor %}
+    </div>
+{% endblock %}
