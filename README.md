@@ -10,3 +10,4 @@ Then you need to run this commands:
 >>>python manage.py runserver
 >>>
 -------
+i am still working on this project...
